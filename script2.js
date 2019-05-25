@@ -119,7 +119,7 @@ function endGame(){
 }
 
 
-//count variable in each cell that tracks how many adjacent cells are mines
+//count variable added that in each cell that tracks how many adjacent cells are mines
 class Cell{
     constructor(x, y){
         this.xlocation = x;
