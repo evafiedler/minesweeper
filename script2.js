@@ -1,8 +1,6 @@
 var cells = [];
 var rows = [];
-//var click = 0;
-
-//make win sequence
+var click = 0;
 
 $(document).ready(function () {
     makeBoard();
@@ -33,6 +31,7 @@ function makeBoard(){
         rows = [];
     }
     console.log(cells);
+
     var mines = random(10);
     for(var a = 0; a < mines.length; a++){
         i = mines[a][0];
@@ -103,26 +102,27 @@ function display(){
     }
 }
 
+function whenClicked(event, i, j){
+    if(event.button === 2){
+        $("#button" + i + j).css("background-color", "yellow");
+        if(cells[i][j].mine){
+            click++;
+        }
+        if(click === 10){
+            endGame("green", "You Win!");
+        }
+    }else{
+        showNumber(i, j);
+    }
+}
+
 function showNumber(i, j){
     if(!cells[i][j].mine){
-        //click++;
         $("#" + i + j).html(cells[i][j].count);
         if(cells[i][j].count === 0){
             clearCells(i, j);
         }else{
             cells[i][j].click = true;
-        }
-        var clickCount = 0;
-        //console.log(click);
-        for(var i = 0; i < 10; i++){
-            for(var j = 0; j < 10; j++){
-                if(cells[i][j].click){
-                    clickCount++;
-                }
-            }
-        }
-        if(clickCount === 90){
-            endGame("green", "You Win!");
         }
     }else{
         endGame("red", "You hit a mine! Game over");
@@ -131,7 +131,6 @@ function showNumber(i, j){
 
 
 function clearCells(i ,j){
-
     if ( cells[i][j].count === 0 && !cells[i][j].click) {
         cells[i][j].click = true;
         if(i < 9){
@@ -186,18 +185,10 @@ function endGame(color, message){
 
 class Cell{
     constructor(x, y){
-        this.xlocation = x;
-        this.ylocation = y;
+        //this.xlocation = x;
+        //this.ylocation = y;
         this.mine = false;
         this.count = 0;
         this.click = false;
-    }
-}
-
-function whenClicked(event, i, j){
-    if(event.button === 2){
-        $("#button" + i + j).css("background-color", "yellow");
-    }else{
-        showNumber(i, j);
     }
 }
