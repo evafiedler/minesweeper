@@ -1,13 +1,18 @@
 var cells = [];
 var rows = [];
 var click = 0;
+var marked = 50;
 
+
+//change number of mines remaining after new game
 $(document).ready(function () {
     makeBoard();
     display();
 });
 
 function newGame(){
+    marked = 50;
+    $("#score").html(marked + " mines remaining");
     $("#results").empty();
     $("#table").empty();
     click = 0;
@@ -22,8 +27,8 @@ function makeBoard(){
     var j = 0;
     var cell;
 
-    for(var i = 0; i < 10; i++){
-        for(var j = 0; j < 10; j++){
+    for(var i = 0; i < 20; i++){
+        for(var j = 0; j < 20; j++){
             cell = new Cell (i, j);
             rows.push(cell);
         }
@@ -32,7 +37,7 @@ function makeBoard(){
     }
     console.log(cells);
 
-    var mines = random(10);
+    var mines = random(50);
     for(var a = 0; a < mines.length; a++){
         i = mines[a][0];
         j = mines[a][1];
@@ -42,23 +47,23 @@ function makeBoard(){
             if(j > 0){
                 cells[i-1][j-1].count++;
             }
-            if(j < 9){
+            if(j < 19){
                 cells[i-1][j+1].count++;
             }
         }
-        if(i < 9){
+        if(i < 19){
             cells[i+1][j].count++;
             if(j > 0){
                 cells[i+1][j-1].count++;
             }
-            if(j < 9){
+            if(j < 19){
                 cells[i+1][j+1].count++;
             }
         }
         if(j > 0){
             cells[i][j-1].count++;
         }
-        if(j < 9){
+        if(j < 19){
             cells[i][j+1].count++;
         }
     }
@@ -73,8 +78,8 @@ function random(num){
     var same = true;
     for(var i = 0; i < num; i++){
         while(same === true){
-            placeOne = Math.floor(Math.random() * 10);
-            placeTwo = Math.floor(Math.random() * 10);
+            placeOne = Math.floor(Math.random() * 20);
+            placeTwo = Math.floor(Math.random() * 20);
             same = false;
             for(var a = 0; a < places.length; a++){
                 if(places[a][0] === placeOne) {
@@ -93,10 +98,10 @@ function random(num){
 }
 
 function display(){
-    for(var i = 0; i < 10; i++){
+    for(var i = 0; i < 20; i++){
         $("#table").append("<tr id='x" + i + "'></tr>");
-        for(var j = 0; j < 10; j++){
-            $("#x" + i).append("<td id='" + i + j + "'><button id='button" + i + j + "' onmousedown='whenClicked(event, " + i
+        for(var j = 0; j < 20; j++){
+            $("#x" + i).append("<td id='" + i + "_" + j + "'><button id='button" + i + "_" + j + "' onmousedown='whenClicked(event, " + i
                 + ", " + j + ")'></button></td>");
         }
     }
@@ -104,21 +109,31 @@ function display(){
 
 function whenClicked(event, i, j){
     if(event.button === 2){
-        $("#button" + i + j).css("background-color", "yellow");
+        //$("#" + i + "_" + j).empty();
+        $("#" + i + "_" + j).css("background-color", "yellow");
+        if(!cells[i][j].yellow){
+            marked--;
+        }
+        cells[i][j].yellow = true;
         if(cells[i][j].mine){
             click++;
         }
-        if(click === 10){
+        if(click === 50){
             endGame("green", "You Win!");
         }
     }else{
+        if(cells[i][j].yellow){
+            $("#" + i + "_" + j).css("background-color", "lightgray");
+            marked++;
+        }
         showNumber(i, j);
     }
+    $("#score").html(marked + " mines remaining");
 }
 
 function showNumber(i, j){
     if(!cells[i][j].mine){
-        $("#" + i + j).html(cells[i][j].count);
+        $("#" + i + "_" + j).html(cells[i][j].count);
         if(cells[i][j].count === 0){
             clearCells(i, j);
         }else{
@@ -133,36 +148,36 @@ function showNumber(i, j){
 function clearCells(i ,j){
     if ( cells[i][j].count === 0 && !cells[i][j].click) {
         cells[i][j].click = true;
-        if(i < 9){
-            $("#" + (i+1) + j).html(cells[i+1][j].count);
+        if(i < 19){
+            $("#" + (i+1) + "_" + j).html(cells[i+1][j].count);
             clearCells( i+1, j );
         }
         if(i > 0){
-            $("#" + (i-1) + j).html(cells[i-1][j].count);
+            $("#" + (i-1) + "_" + j).html(cells[i-1][j].count);
             clearCells( i-1, j );
         }
         if(j > 0){
-            $("#" + i + (j-1)).html(cells[i][j-1].count);
+            $("#" + i + "_" + (j-1)).html(cells[i][j-1].count);
             clearCells( i, j-1 );
         }
-        if(j < 9){
-            $("#" + i + (j+1)).html(cells[i][j+1].count);
+        if(j < 19){
+            $("#" + i + "_" + (j+1)).html(cells[i][j+1].count);
             clearCells( i, j+1 );
         }
-        if(i < 9 && j < 9){
-            $("#" + (i+1) + (j+1)).html(cells[i+1][j+1].count);
+        if(i < 19 && j < 19){
+            $("#" + (i+1) + "_" + (j+1)).html(cells[i+1][j+1].count);
             clearCells( i+1, j+1 );
         }
-        if(i > 0 && j < 9){
-            $("#" + (i-1) + (j+1)).html(cells[i-1][j+1].count);
+        if(i > 0 && j < 19){
+            $("#" + (i-1) + "_" + (j+1)).html(cells[i-1][j+1].count);
             clearCells( i-1, j+1 );
         }
         if(i < 9 && j > 0){
-            $("#" + (i+1) + (j-1)).html(cells[i+1][j-1].count);
+            $("#" + (i+1) + "_" + (j-1)).html(cells[i+1][j-1].count);
             clearCells( i+1, j-1 );
         }
         if(i > 0 && j > 0){
-            $("#" + (i-1) + (j-1)).html(cells[i-1][j-1].count);
+            $("#" + (i-1) + "_" + (j-1)).html(cells[i-1][j-1].count);
             clearCells( i-1, j-1 );
         }
     } else {
@@ -171,12 +186,13 @@ function clearCells(i ,j){
 }
 
 function endGame(color, message){
-    for(var i = 0; i < 10; i++){
-        for(var j = 0; j < 10; j++){
+    for(var i = 0; i < 20; i++){
+        for(var j = 0; j < 20; j++){
             if(cells[i][j].mine){
-                $("#button" + i + j).css("background-color", color);
+                $("#" + i + "_" + j).empty();
+                $("#" + i + "_" + j).css("background-color", color);
             }
-            $("#button" + i + j).prop("disabled", true);
+            $("#button" + i + "_" + j).prop("disabled", true);
         }
     }
     alert(message);
@@ -190,5 +206,6 @@ class Cell{
         this.mine = false;
         this.count = 0;
         this.click = false;
+        this.yellow = false;
     }
 }
