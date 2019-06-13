@@ -172,7 +172,7 @@ function clearCells(i ,j){
             $("#" + (i-1) + "_" + (j+1)).html(cells[i-1][j+1].count);
             clearCells( i-1, j+1 );
         }
-        if(i < 9 && j > 0){
+        if(i < 19 && j > 0){
             $("#" + (i+1) + "_" + (j-1)).html(cells[i+1][j-1].count);
             clearCells( i+1, j-1 );
         }
